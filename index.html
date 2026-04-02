@@ -37,9 +37,33 @@
         }
 
         h1 { font-size: 1.8rem; font-weight: 800; margin-bottom: 8px; letter-spacing: -1px; }
-        .subtitle { font-size: 0.85rem; color: #666; font-weight: 500; margin-bottom: 30px; }
+        .subtitle { font-size: 0.85rem; color: #666; font-weight: 500; margin-bottom: 25px; }
 
-        /* Sync Result Display */
+        /* Unit Switcher */
+        .unit-selector {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-bottom: 20px;
+            background: var(--input-bg);
+            padding: 5px;
+            border-radius: var(--radius);
+        }
+        .unit-tab {
+            padding: 10px 0;
+            font-size: 0.75rem;
+            font-weight: 800;
+            cursor: pointer;
+            border-radius: 12px;
+            transition: 0.2s;
+            color: #999;
+        }
+        .unit-tab.active {
+            background: var(--main);
+            color: #fff;
+        }
+
+        /* Result Display */
         #resultDisplay {
             display: none;
             margin-bottom: 25px;
@@ -88,6 +112,7 @@
             font-weight: 800;
             cursor: pointer;
             transition: 0.1s;
+            -webkit-appearance: none;
         }
         .size-btn:active { background: var(--accent); transform: scale(0.95); }
         .list-label {
@@ -96,7 +121,17 @@
             font-weight: 800;
             margin-bottom: 10px;
             color: #999;
-            margin-top: 20px;
+            margin-top: 10px;
+        }
+
+        /* Warning & Buttons */
+        .warning-text {
+            color: #444;
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            padding: 0 10px;
+            line-height: 1.4;
         }
 
         footer { margin-top: 50px; font-size: 11px; color: #aaa; line-height: 1.8; }
@@ -135,23 +170,30 @@
 
 <div class="container">
     <h1>Global Shoe Guide</h1>
-    <p class="subtitle">Quick Kids' size sync for US, UK, EU & CM.</p>
+    <p class="subtitle">Kids' Global Size Sync (US/UK/EU/CM)</p>
 
     <div id="resultDisplay"></div>
 
     <div id="selectionArea">
-        <div class="list-label">Select Current Size (CM/Japan)</div>
+        <div class="unit-selector">
+            <div class="unit-tab active" onclick="switchUnit('us', this)">US</div>
+            <div class="unit-tab" onclick="switchUnit('uk', this)">UK</div>
+            <div class="unit-tab" onclick="switchUnit('eu', this)">EU</div>
+            <div class="unit-tab" onclick="switchUnit('cm', this)">CM</div>
+        </div>
+        <div class="list-label" id="listTitle">Select Current Size (US)</div>
         <div class="size-list" id="sizeGrid"></div>
     </div>
 
     <div class="footer-btns">
+        <div class="warning-text">⚠️ Sizes vary significantly by brand. Always try on before purchase.</div>
         <a href="https://ko-fi.com/afrorakda" target="_blank" class="kofi-btn">☕️buy me a coffee</a>
         <button class="home-btn" onclick="showModal()">Add to Home Screen</button>
     </div>
 
     <footer>
-        <div>Sizes vary by brand. Trying on is recommended.</div>
-        <div>No login / No tracking / No ads / afrorakda © 2026</div>
+        <div>No login / No tracking / No ads / Browser only</div>
+        <div>Privacy Policy / afrorakda © 2026</div>
     </footer>
 </div>
 
@@ -166,30 +208,42 @@
 </div>
 
 <script>
-    // Standard Kids Size Map (Approximate Global Standard)
     const SIZE_DATA = [
-        { cm: "12", us: "5",  uk: "4.5", eu: "20" },
-        { cm: "13", us: "6",  uk: "5.5", eu: "22" },
-        { cm: "14", us: "8",  uk: "7",   eu: "24" },
-        { cm: "15", us: "9",  uk: "8.5", eu: "26" },
-        { cm: "16", us: "10", uk: "9.5", eu: "27" },
-        { cm: "17", us: "11", uk: "10.5",eu: "28" },
-        { cm: "18", us: "12", uk: "11.5",eu: "30" },
-        { cm: "19", us: "13", uk: "12.5",eu: "31" },
-        { cm: "20", us: "1",  uk: "13.5",eu: "32" },
-        { cm: "21", us: "2",  uk: "1",   eu: "33" },
-        { cm: "22", us: "3",  uk: "2",   eu: "35" }
+        { cm: "12", us: "5",  uk: "4.5", eu: "20", in: "4.7" },
+        { cm: "13", us: "6",  uk: "5.5", eu: "22", in: "5.1" },
+        { cm: "14", us: "8",  uk: "7",   eu: "24", in: "5.5" },
+        { cm: "15", us: "9",  uk: "8.5", eu: "26", in: "5.9" },
+        { cm: "16", us: "10", uk: "9.5", eu: "27", in: "6.3" },
+        { cm: "17", us: "11", uk: "10.5",eu: "28", in: "6.7" },
+        { cm: "18", us: "12", uk: "11.5",eu: "30", in: "7.1" },
+        { cm: "19", us: "13", uk: "12.5",eu: "31", in: "7.5" },
+        { cm: "20", us: "1",  uk: "13.5",eu: "32", in: "7.9" },
+        { cm: "21", us: "2",  uk: "1",   eu: "33", in: "8.3" },
+        { cm: "22", us: "3",  uk: "2",   eu: "35", in: "8.7" },
+        { cm: "23", us: "4.5",uk: "3.5", eu: "36", in: "9.1" },
+        { cm: "24", us: "6",  uk: "5",   eu: "38", in: "9.5" }
     ];
 
+    let currentUnit = 'us';
     const sizeGrid = document.getElementById('sizeGrid');
     const resultDisplay = document.getElementById('resultDisplay');
     const selectionArea = document.getElementById('selectionArea');
+    const listTitle = document.getElementById('listTitle');
 
-    function init() {
+    function switchUnit(unit, el) {
+        currentUnit = unit;
+        document.querySelectorAll('.unit-tab').forEach(t => t.classList.remove('active'));
+        el.classList.add('active');
+        listTitle.innerText = `Select Current Size (${unit.toUpperCase()})`;
+        renderGrid();
+    }
+
+    function renderGrid() {
+        sizeGrid.innerHTML = '';
         SIZE_DATA.forEach((item, index) => {
             const btn = document.createElement('div');
             btn.className = 'size-btn';
-            btn.innerText = item.cm + ' cm';
+            btn.innerText = item[currentUnit] + (currentUnit === 'cm' ? ' cm' : '');
             btn.onclick = () => showResult(index);
             sizeGrid.appendChild(btn);
         });
@@ -203,16 +257,17 @@
         selectionArea.style.display = 'none';
         resultDisplay.style.display = 'block';
         
-        let nextText = next ? `Next Size Goal: ${next.cm}cm (US ${next.us})` : "Standard Kids Max Size Reached.";
+        let nextText = next ? `Next Size Goal: US ${next.us} (${next.cm}cm)` : "Youth/Adult size reached.";
 
         resultDisplay.innerHTML = `
             <div class="result-card">
-                <div style="font-size:0.8rem; font-weight:800; color:var(--main); margin-bottom:5px;">CURRENT SYNC: ${current.cm}cm</div>
+                <div style="font-size:0.8rem; font-weight:800; color:var(--main); margin-bottom:5px;">SYNCED RESULTS</div>
                 <div class="result-grid">
-                    <div class="res-item"><div class="res-label">US</div><div class="res-value">${current.us}</div></div>
-                    <div class="res-item"><div class="res-label">UK</div><div class="res-value">${current.uk}</div></div>
-                    <div class="res-item"><div class="res-label">EU</div><div class="res-value">${current.eu}</div></div>
-                    <div class="res-item"><div class="res-label">CM</div><div class="res-value">${current.cm}</div></div>
+                    <div class="res-item"><div class="res-label">US Size</div><div class="res-value">${current.us}</div></div>
+                    <div class="res-item"><div class="res-label">UK Size</div><div class="res-value">${current.uk}</div></div>
+                    <div class="res-item"><div class="res-label">EU Size</div><div class="res-value">${current.eu}</div></div>
+                    <div class="res-item"><div class="res-label">Metric (cm)</div><div class="res-value">${current.cm}</div></div>
+                    <div class="res-item"><div class="res-label">Inches</div><div class="res-value">${current.in}"</div></div>
                 </div>
                 <div class="next-size">${nextText}</div>
             </div>
@@ -225,7 +280,7 @@
         selectionArea.style.display = 'block';
     }
 
-    init();
+    renderGrid();
 
     function showModal() { document.getElementById('modal').style.display = 'flex'; }
     function hideModal() { document.getElementById('modal').style.display = 'none'; }
