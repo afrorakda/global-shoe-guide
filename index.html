@@ -56,7 +56,7 @@
             cursor: pointer;
             border-radius: 12px;
             transition: 0.2s;
-            color: #999;
+            color: #777; /* 濃く修正 */
         }
         .unit-tab.active {
             background: var(--main);
@@ -108,10 +108,13 @@
             border: 1px solid #eee;
             border-radius: var(--radius);
             padding: 15px 5px;
-            font-size: 0.9rem;
+            font-size: 0.85rem; /* 微調整 */
             font-weight: 800;
             cursor: pointer;
             transition: 0.1s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             -webkit-appearance: none;
         }
         .size-btn:active { background: var(--accent); transform: scale(0.95); }
@@ -146,6 +149,7 @@
             color: var(--main); border: none; padding: 12px;
             border-radius: var(--radius); font-weight: 800; font-size: 13px; cursor: pointer;
         }
+        /* Back to List Button - Enhanced */
         .back-btn {
             background: var(--main) !important;
             color: #fff !important;
