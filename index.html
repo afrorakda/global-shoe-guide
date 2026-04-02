@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Global Shoe Guide</title>
+    
+    <link rel="icon" href="image_64.png">
+    <link rel="apple-touch-icon" href="image_64.png">
+
+    <style>
+        :root {
+            --main: #333;
+            --bg: #fff;
+            --accent: #f0f0f0;
+            --input-bg: #fafafa;
+            --radius: 15px;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg);
+            color: var(--main);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 420px;
+            padding: 40px 20px;
+            box-sizing: border-box;
+            text-align: center;
+        }
+
+        h1 { font-size: 1.8rem; font-weight: 800; margin-bottom: 8px; letter-spacing: -1px; }
+        .subtitle { font-size: 0.85rem; color: #666; font-weight: 500; margin-bottom: 30px; }
+
+        /* Sync Result Display */
+        #resultDisplay {
+            display: none;
+            margin-bottom: 25px;
+            text-align: left;
+        }
+        .result-card {
+            background: var(--input-bg);
+            border: 2px solid var(--main);
+            border-radius: var(--radius);
+            padding: 20px;
+        }
+        .result-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .res-item {
+            border-bottom: 1px solid var(--accent);
+            padding-bottom: 8px;
+        }
+        .res-label { font-size: 0.7rem; font-weight: 800; color: #999; text-transform: uppercase; }
+        .res-value { font-size: 1.4rem; font-weight: 900; }
+        
+        .next-size {
+            margin-top: 15px;
+            padding-top: 10px;
+            border-top: 2px dashed #ddd;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #666;
+        }
+
+        /* Selection List */
+        .size-list {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+        .size-btn {
+            background: #fff;
+            border: 1px solid #eee;
+            border-radius: var(--radius);
+            padding: 15px 5px;
+            font-size: 0.9rem;
+            font-weight: 800;
+            cursor: pointer;
+            transition: 0.1s;
+        }
+        .size-btn:active { background: var(--accent); transform: scale(0.95); }
+        .list-label {
+            text-align: left;
+            font-size: 0.75rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+            color: #999;
+            margin-top: 20px;
+        }
+
+        footer { margin-top: 50px; font-size: 11px; color: #aaa; line-height: 1.8; }
+        .footer-btns { margin-top: 30px; }
+        .kofi-btn {
+            display: inline-block; background: var(--main); color: #fff;
+            padding: 12px 25px; border-radius: var(--radius);
+            text-decoration: none; font-weight: bold; font-size: 14px; margin-bottom: 12px;
+        }
+        .home-btn {
+            display: block; width: 60%; margin: 0 auto; background: var(--accent);
+            color: var(--main); border: none; padding: 12px;
+            border-radius: var(--radius); font-weight: 800; font-size: 13px; cursor: pointer;
+        }
+        .back-btn {
+            background: var(--main) !important;
+            color: #fff !important;
+            width: 100% !important;
+            padding: 18px !important;
+            font-size: 1rem !important;
+            margin-top: 20px;
+        }
+
+        #modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6); align-items: center; justify-content: center; z-index: 100;
+        }
+        .modal-content {
+            background: #fff; width: 85%; max-width: 320px; padding: 30px;
+            border-radius: var(--radius); text-align: left; position: relative;
+        }
+        .close-x { position: absolute; top: 15px; right: 20px; font-size: 20px; color: #ccc; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Global Shoe Guide</h1>
+    <p class="subtitle">Quick Kids' size sync for US, UK, EU & CM.</p>
+
+    <div id="resultDisplay"></div>
+
+    <div id="selectionArea">
+        <div class="list-label">Select Current Size (CM/Japan)</div>
+        <div class="size-list" id="sizeGrid"></div>
+    </div>
+
+    <div class="footer-btns">
+        <a href="https://ko-fi.com/afrorakda" target="_blank" class="kofi-btn">☕️buy me a coffee</a>
+        <button class="home-btn" onclick="showModal()">Add to Home Screen</button>
+    </div>
+
+    <footer>
+        <div>Sizes vary by brand. Trying on is recommended.</div>
+        <div>No login / No tracking / No ads / afrorakda © 2026</div>
+    </footer>
+</div>
+
+<div id="modal" onclick="hideModal()">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <span class="close-x" onclick="hideModal()">×</span>
+        <h3>📱 Install</h3>
+        <p>Add to your home screen.</p>
+        <p>🍏 <strong>iPhone (Safari):</strong><br>Tap Share, then Add to Home Screen.</p>
+        <p>🤖 <strong>Android (Chrome):</strong><br>Tap Menu (⋮), then Add to Home Screen.</p>
+    </div>
+</div>
+
+<script>
+    // Standard Kids Size Map (Approximate Global Standard)
+    const SIZE_DATA = [
+        { cm: "12", us: "5",  uk: "4.5", eu: "20" },
+        { cm: "13", us: "6",  uk: "5.5", eu: "22" },
+        { cm: "14", us: "8",  uk: "7",   eu: "24" },
+        { cm: "15", us: "9",  uk: "8.5", eu: "26" },
+        { cm: "16", us: "10", uk: "9.5", eu: "27" },
+        { cm: "17", us: "11", uk: "10.5",eu: "28" },
+        { cm: "18", us: "12", uk: "11.5",eu: "30" },
+        { cm: "19", us: "13", uk: "12.5",eu: "31" },
+        { cm: "20", us: "1",  uk: "13.5",eu: "32" },
+        { cm: "21", us: "2",  uk: "1",   eu: "33" },
+        { cm: "22", us: "3",  uk: "2",   eu: "35" }
+    ];
+
+    const sizeGrid = document.getElementById('sizeGrid');
+    const resultDisplay = document.getElementById('resultDisplay');
+    const selectionArea = document.getElementById('selectionArea');
+
+    function init() {
+        SIZE_DATA.forEach((item, index) => {
+            const btn = document.createElement('div');
+            btn.className = 'size-btn';
+            btn.innerText = item.cm + ' cm';
+            btn.onclick = () => showResult(index);
+            sizeGrid.appendChild(btn);
+        });
+    }
+
+    function showResult(index) {
+        const current = SIZE_DATA[index];
+        const next = SIZE_DATA[index + 1];
+        
+        window.scrollTo(0,0);
+        selectionArea.style.display = 'none';
+        resultDisplay.style.display = 'block';
+        
+        let nextText = next ? `Next Size Goal: ${next.cm}cm (US ${next.us})` : "Standard Kids Max Size Reached.";
+
+        resultDisplay.innerHTML = `
+            <div class="result-card">
+                <div style="font-size:0.8rem; font-weight:800; color:var(--main); margin-bottom:5px;">CURRENT SYNC: ${current.cm}cm</div>
+                <div class="result-grid">
+                    <div class="res-item"><div class="res-label">US</div><div class="res-value">${current.us}</div></div>
+                    <div class="res-item"><div class="res-label">UK</div><div class="res-value">${current.uk}</div></div>
+                    <div class="res-item"><div class="res-label">EU</div><div class="res-value">${current.eu}</div></div>
+                    <div class="res-item"><div class="res-label">CM</div><div class="res-value">${current.cm}</div></div>
+                </div>
+                <div class="next-size">${nextText}</div>
+            </div>
+            <button class="home-btn back-btn" onclick="resetUI()">Back to List</button>
+        `;
+    }
+
+    function resetUI() {
+        resultDisplay.style.display = 'none';
+        selectionArea.style.display = 'block';
+    }
+
+    init();
+
+    function showModal() { document.getElementById('modal').style.display = 'flex'; }
+    function hideModal() { document.getElementById('modal').style.display = 'none'; }
+</script>
+
+</body>
+</html>
