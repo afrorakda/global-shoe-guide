@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Global Shoe Guide</title>
     
     <link rel="icon" href="image_64.png">
@@ -12,10 +12,12 @@
         :root {
             --main: #333;
             --bg: #fff;
-            --accent: #f0f0f0;
+            --accent: #eee;
             --input-bg: #fafafa;
             --radius: 15px;
         }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -26,18 +28,37 @@
             justify-content: center;
             min-height: 100vh;
             -webkit-font-smoothing: antialiased;
+            padding: env(safe-area-inset-top, 20px) 20px env(safe-area-inset-bottom, 20px) 20px;
         }
 
         .container {
             width: 100%;
             max-width: 420px;
-            padding: 40px 20px;
-            box-sizing: border-box;
-            text-align: center;
+            display: flex;
+            flex-direction: column;
         }
 
-        h1 { font-size: 1.8rem; font-weight: 800; margin-bottom: 8px; letter-spacing: -1px; }
-        .subtitle { font-size: 0.85rem; color: #666; font-weight: 500; margin-bottom: 25px; }
+        /* Header with Hub Button */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+
+        h1 { font-size: 1.8rem; font-weight: 900; letter-spacing: -1.5px; margin: 0; }
+        
+        .hub-link {
+            text-decoration: none;
+            font-size: 0.8rem;
+            font-weight: 800;
+            color: var(--main);
+            background: var(--accent);
+            padding: 8px 14px;
+            border-radius: 12px; /* 憲法に基づき調整 */
+        }
+
+        .subtitle { font-size: 0.85rem; color: #999; font-weight: 700; margin-bottom: 25px; text-align: left; }
 
         /* Unit Switcher */
         .unit-selector {
@@ -50,17 +71,19 @@
             border-radius: var(--radius);
         }
         .unit-tab {
-            padding: 10px 0;
-            font-size: 0.75rem;
+            padding: 12px 0;
+            font-size: 0.8rem;
             font-weight: 800;
             cursor: pointer;
             border-radius: 12px;
             transition: 0.2s;
-            color: #777; /* 濃く修正 */
+            color: #bbb;
+            text-align: center;
         }
         .unit-tab.active {
             background: var(--main);
             color: #fff;
+            -webkit-text-fill-color: #fff;
         }
 
         /* Result Display */
@@ -85,16 +108,16 @@
             border-bottom: 1px solid var(--accent);
             padding-bottom: 8px;
         }
-        .res-label { font-size: 0.7rem; font-weight: 800; color: #999; text-transform: uppercase; }
-        .res-value { font-size: 1.4rem; font-weight: 900; }
+        .res-label { font-size: 0.7rem; font-weight: 800; color: #bbb; text-transform: uppercase; }
+        .res-value { font-size: 1.4rem; font-weight: 900; -webkit-text-fill-color: var(--main); }
         
         .next-size {
             margin-top: 15px;
             padding-top: 10px;
-            border-top: 2px dashed #ddd;
+            border-top: 2px dashed var(--accent);
             font-size: 0.85rem;
-            font-weight: 700;
-            color: #666;
+            font-weight: 800;
+            color: #999;
         }
 
         /* Selection List */
@@ -104,52 +127,58 @@
             gap: 10px;
         }
         .size-btn {
-            background: #fff;
-            border: 1px solid #eee;
+            background: var(--input-bg);
+            border: 2px solid var(--accent);
             border-radius: var(--radius);
-            padding: 15px 5px;
-            font-size: 0.85rem; /* 微調整 */
+            padding: 18px 5px;
+            font-size: 0.9rem;
             font-weight: 800;
+            color: var(--main);
             cursor: pointer;
             transition: 0.1s;
             display: flex;
             align-items: center;
             justify-content: center;
             -webkit-appearance: none;
+            -webkit-text-fill-color: var(--main);
+            opacity: 1 !important;
         }
         .size-btn:active { background: var(--accent); transform: scale(0.95); }
+        
         .list-label {
             text-align: left;
             font-size: 0.75rem;
             font-weight: 800;
             margin-bottom: 10px;
-            color: #999;
-            margin-top: 10px;
+            color: #bbb;
         }
 
         /* Warning & Buttons */
         .warning-text {
-            color: #444;
-            font-size: 13px;
+            color: #bbb;
+            font-size: 0.75rem;
             font-weight: 700;
-            margin-bottom: 15px;
+            margin: 20px 0;
             padding: 0 10px;
             line-height: 1.4;
         }
 
-        footer { margin-top: 50px; font-size: 11px; color: #aaa; line-height: 1.8; }
-        .footer-btns { margin-top: 30px; }
+        .footer-btns { margin-top: auto; padding: 20px 0; text-align: center; }
+        
         .kofi-btn {
-            display: inline-block; background: var(--main); color: #fff;
-            padding: 12px 25px; border-radius: var(--radius);
-            text-decoration: none; font-weight: bold; font-size: 14px; margin-bottom: 12px;
+            display: inline-flex; align-items: center; justify-content: center;
+            background: var(--main); color: #fff; width: 100%; max-width: 320px;
+            padding: 16px; border-radius: var(--radius);
+            text-decoration: none; font-weight: 900; font-size: 0.9rem; margin-bottom: 12px;
+            -webkit-text-fill-color: #fff;
         }
+        
         .home-btn {
-            display: block; width: 60%; margin: 0 auto; background: var(--accent);
-            color: var(--main); border: none; padding: 12px;
-            border-radius: var(--radius); font-weight: 800; font-size: 13px; cursor: pointer;
+            display: block; width: 100%; max-width: 320px; margin: 0 auto; 
+            background: var(--accent); color: var(--main); border: none; 
+            padding: 12px; border-radius: var(--radius); font-weight: 800; font-size: 0.85rem; cursor: pointer;
         }
-        /* Back to List Button - Enhanced */
+        
         .back-btn {
             background: var(--main) !important;
             color: #fff !important;
@@ -157,23 +186,33 @@
             padding: 18px !important;
             font-size: 1rem !important;
             margin-top: 20px;
+            font-weight: 900;
+            -webkit-text-fill-color: #fff;
         }
 
+        footer { padding: 20px 0; text-align: center; font-size: 0.7rem; color: #bbb; line-height: 1.6; font-weight: 600; }
+        footer a { color: inherit; text-decoration: underline; }
+
+        /* Modal */
         #modal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.6); align-items: center; justify-content: center; z-index: 100;
+            background: rgba(0,0,0,0.6); align-items: center; justify-content: center; z-index: 1000;
+            backdrop-filter: blur(4px);
         }
         .modal-content {
-            background: #fff; width: 85%; max-width: 320px; padding: 30px;
+            background: #fff; width: 90%; max-width: 320px; padding: 35px;
             border-radius: var(--radius); text-align: left; position: relative;
         }
-        .close-x { position: absolute; top: 15px; right: 20px; font-size: 20px; color: #ccc; cursor: pointer; }
+        .close-x { position: absolute; top: 15px; right: 20px; font-size: 24px; color: #ccc; cursor: pointer; font-weight: bold; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>Global Shoe Guide</h1>
+    <header>
+        <h1>Shoe Guide</h1>
+        <a href="https://afrorakda.github.io/" class="hub-link">🏠 Hub</a>
+    </header>
     <p class="subtitle">Kids' Global Size Sync (US/UK/EU/CM)</p>
 
     <div id="resultDisplay"></div>
@@ -190,24 +229,26 @@
     </div>
 
     <div class="footer-btns">
-        <div class="warning-text">⚠️ Sizes vary significantly by brand. Always try on before purchase.</div>
+        <div class="warning-text">⚠️ Sizes vary by brand. Always try on before purchase.</div>
         <a href="https://ko-fi.com/afrorakda" target="_blank" class="kofi-btn">☕️buy me a coffee</a>
         <button class="home-btn" onclick="showModal()">Add to Home Screen</button>
     </div>
 
-    <footer>
-        <div>No login / No tracking / No ads / Browser only</div>
-        <div>Privacy Policy / afrorakda © 2026</div>
+    <footer id="dynamicFooter">
+        No login / No tracking / No ads / Browser only<br>
+        <a href="https://afrorakda.com/privacy/">Privacy Policy</a> / afrorakda © 2026
     </footer>
 </div>
 
 <div id="modal" onclick="hideModal()">
     <div class="modal-content" onclick="event.stopPropagation()">
         <span class="close-x" onclick="hideModal()">×</span>
-        <h3>📱 Install</h3>
-        <p>Add to your home screen.</p>
-        <p>🍏 <strong>iPhone (Safari):</strong><br>Tap Share, then Add to Home Screen.</p>
-        <p>🤖 <strong>Android (Chrome):</strong><br>Tap Menu (⋮), then Add to Home Screen.</p>
+        <h3 style="margin-bottom: 10px; font-weight: 900;">📱 Install</h3>
+        <p style="margin-bottom: 20px; color: #999; font-weight: 700; font-size: 0.85rem;">Add to your home screen.</p>
+        <div style="font-size: 0.9rem; line-height: 1.6; font-weight: 700;">
+            <p>🍏 <strong>iPhone:</strong><br>Share > Add to Home Screen</p>
+            <p style="margin-top:10px;">🤖 <strong>Android:</strong><br>Menu (⋮) > Add to Home Screen</p>
+        </div>
     </div>
 </div>
 
@@ -265,7 +306,7 @@
 
         resultDisplay.innerHTML = `
             <div class="result-card">
-                <div style="font-size:0.8rem; font-weight:800; color:var(--main); margin-bottom:5px;">SYNCED RESULTS</div>
+                <div style="font-size:0.75rem; font-weight:900; color:var(--main); margin-bottom:15px; letter-spacing:1px; text-transform:uppercase;">Synced Results</div>
                 <div class="result-grid">
                     <div class="res-item"><div class="res-label">US Size</div><div class="res-value">${current.us}</div></div>
                     <div class="res-item"><div class="res-label">UK Size</div><div class="res-value">${current.uk}</div></div>
@@ -284,10 +325,23 @@
         selectionArea.style.display = 'block';
     }
 
-    renderGrid();
-
     function showModal() { document.getElementById('modal').style.display = 'flex'; }
     function hideModal() { document.getElementById('modal').style.display = 'none'; }
+
+    async function loadFooter() {
+        try {
+            const res = await fetch('footer.json');
+            if (res.ok) {
+                const data = await res.json();
+                if (data.footerHtml) document.getElementById('dynamicFooter').innerHTML = data.footerHtml;
+            }
+        } catch (e) { /* Fallback to hardcoded HTML */ }
+    }
+
+    window.onload = () => {
+        renderGrid();
+        loadFooter();
+    };
 </script>
 
 </body>
