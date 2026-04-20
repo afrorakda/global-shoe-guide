@@ -95,32 +95,38 @@
             background: var(--input-bg);
             border: 2px solid var(--main);
             border-radius: var(--radius);
-            padding: 20px;
+            padding: 24px 20px;
         }
         .result-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-            margin-top: 15px;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
         }
-        .res-item {
-            border-bottom: 1px solid var(--accent);
-            padding-bottom: 8px;
-        }
-        .res-label { font-size: 0.7rem; font-weight: 800; color: #bbb; text-transform: uppercase; }
-        .res-value { font-size: 1.6rem; font-weight: 900; -webkit-text-fill-color: var(--main); }
+        /* Top full-width result for focus */
+        .res-item.hero { grid-column: span 2; border-bottom: 2px solid var(--accent); padding-bottom: 15px; margin-bottom: 5px; }
+        .res-item.hero .res-value { font-size: 3rem; line-height: 1; }
+
+        .res-item { border-bottom: 1px solid var(--accent); padding-bottom: 10px; }
+        .res-label { font-size: 0.75rem; font-weight: 900; color: #888; text-transform: uppercase; margin-bottom: 4px; }
+        .res-value { font-size: 1.8rem; font-weight: 900; -webkit-text-fill-color: var(--main); letter-spacing: -1px; }
         
+        /* Interactive Next Size Box */
         .next-size-box {
-            margin-top: 20px;
-            padding: 15px;
-            background: #fdfdfd;
+            margin-top: 25px;
+            padding: 18px;
+            background: #fff;
             border: 2px dashed var(--accent);
-            border-radius: 12px;
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: 0.2s;
         }
-        .next-label { font-size: 0.7rem; font-weight: 900; color: #999; margin-bottom: 8px; text-transform: uppercase; }
-        .next-values { font-size: 0.9rem; font-weight: 800; color: var(--main); display: flex; gap: 15px; }
+        .next-size-box:active { transform: scale(0.98); background: var(--input-bg); }
+        .next-label { font-size: 0.7rem; font-weight: 900; color: #999; margin-bottom: 10px; text-transform: uppercase; display: flex; justify-content: space-between; }
+        .next-label::after { content: "Tap to view →"; font-size: 0.6rem; color: var(--main); opacity: 0.5; }
+        .next-values { font-size: 1.1rem; font-weight: 900; color: var(--main); display: flex; gap: 20px; }
 
         /* Selection List */
+        #gridContainer { padding-bottom: 20px; }
         .size-list {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -131,7 +137,7 @@
             border: 2px solid var(--accent);
             border-radius: var(--radius);
             padding: 18px 5px;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             font-weight: 800;
             color: var(--main);
             cursor: pointer;
@@ -147,12 +153,12 @@
         
         .list-label {
             text-align: left;
-            font-size: 0.75rem;
+            font-size: 0.8rem;
             font-weight: 900;
-            margin-bottom: 10px;
-            margin-top: 20px;
+            margin: 25px 0 12px 2px;
             color: var(--main);
-            padding-left: 2px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
         .list-label:first-child { margin-top: 0; }
 
@@ -182,7 +188,7 @@
             background: var(--main) !important;
             color: #fff !important;
             width: 100% !important;
-            padding: 18px !important;
+            padding: 20px !important;
             font-size: 1rem !important;
             margin-top: 20px;
             font-weight: 900;
@@ -192,7 +198,6 @@
         footer { padding: 20px 0; text-align: center; font-size: 0.7rem; color: #bbb; line-height: 1.6; font-weight: 600; }
         footer a { color: inherit; text-decoration: underline; }
 
-        /* Modal */
         #modal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.6); align-items: center; justify-content: center; z-index: 1000;
@@ -252,19 +257,19 @@
 
 <script>
     const SIZE_DATA = [
-        { cm: "12", us: "5",  uk: "4.5", eu: "20", in: "4.7", cat: "Toddler" },
-        { cm: "13", us: "6",  uk: "5.5", eu: "22", in: "5.1", cat: "Toddler" },
-        { cm: "14", us: "8",  uk: "7",   eu: "24", in: "5.5", cat: "Toddler" },
-        { cm: "15", us: "9",  uk: "8.5", eu: "26", in: "5.9", cat: "Toddler" },
-        { cm: "16", us: "10", uk: "9.5", eu: "27", in: "6.3", cat: "Toddler" },
-        { cm: "17", us: "11", uk: "10.5",eu: "28", in: "6.7", cat: "Little Kid" },
-        { cm: "18", us: "12", uk: "11.5",eu: "30", in: "7.1", cat: "Little Kid" },
-        { cm: "19", us: "13", uk: "12.5",eu: "31", in: "7.5", cat: "Little Kid" },
-        { cm: "20", us: "1",  uk: "13.5",eu: "32", in: "7.9", cat: "Youth" },
-        { cm: "21", us: "2",  uk: "1",   eu: "33", in: "8.3", cat: "Youth" },
-        { cm: "22", us: "3",  uk: "2",   eu: "35", in: "8.7", cat: "Youth" },
-        { cm: "23", us: "4.5",uk: "3.5", eu: "36", in: "9.1", cat: "Youth" },
-        { cm: "24", us: "6",  uk: "5",   eu: "38", in: "9.5", cat: "Youth" }
+        { cm: "12", us: "5",  uk: "4.5", eu: "20", cat: "Toddler" },
+        { cm: "13", us: "6",  uk: "5.5", eu: "22", cat: "Toddler" },
+        { cm: "14", us: "8",  uk: "7",   eu: "24", cat: "Toddler" },
+        { cm: "15", us: "9",  uk: "8.5", eu: "26", cat: "Toddler" },
+        { cm: "16", us: "10", uk: "9.5", eu: "27", cat: "Toddler" },
+        { cm: "17", us: "11", uk: "10.5",eu: "28", cat: "Little Kid" },
+        { cm: "18", us: "12", uk: "11.5",eu: "30", cat: "Little Kid" },
+        { cm: "19", us: "13", uk: "12.5",eu: "31", cat: "Little Kid" },
+        { cm: "20", us: "1",  uk: "13.5",eu: "32", cat: "Youth" },
+        { cm: "21", us: "2",  uk: "1",   eu: "33", cat: "Youth" },
+        { cm: "22", us: "3",  uk: "2",   eu: "35", cat: "Youth" },
+        { cm: "23", us: "4.5",uk: "3.5", eu: "36", cat: "Youth" },
+        { cm: "24", us: "6",  uk: "5",   eu: "38", cat: "Youth" }
     ];
 
     let currentUnit = 'us';
@@ -315,24 +320,30 @@
         resultDisplay.style.display = 'block';
         
         let nextBox = next ? `
-            <div class="next-size-box">
+            <div class="next-size-box" onclick="showResult(${index + 1})">
                 <div class="next-label">Next Size Goal</div>
                 <div class="next-values">
                     <span>US ${next.us}</span>
                     <span>${next.eu} EU</span>
                     <span>${next.cm}cm</span>
                 </div>
-            </div>` : `<div class="next-size-box" style="border:none; color:#bbb;">Youth/Adult size reached.</div>`;
+            </div>` : `<div class="next-size-box" style="border:none; cursor:default; opacity:0.5;">Youth/Adult size reached.</div>`;
+
+        // Hero logic: display based on current selection
+        let heroLabel = currentUnit === 'us' ? 'US Size' : (currentUnit === 'eu' ? 'EU Size' : (currentUnit === 'cm' ? 'Metric' : 'UK Size'));
+        let heroValue = current[currentUnit];
 
         resultDisplay.innerHTML = `
             <div class="result-card">
-                <div style="font-size:0.75rem; font-weight:900; color:var(--main); margin-bottom:15px; letter-spacing:1px; text-transform:uppercase;">Synced Results (${current.cat})</div>
                 <div class="result-grid">
-                    <div class="res-item"><div class="res-label">US Size</div><div class="res-value">${current.us}</div></div>
-                    <div class="res-item"><div class="res-label">UK Size</div><div class="res-value">${current.uk}</div></div>
-                    <div class="res-item"><div class="res-label">EU Size</div><div class="res-value">${current.eu}</div></div>
-                    <div class="res-item"><div class="res-label">Metric (cm)</div><div class="res-value">${current.cm}</div></div>
-                    <div class="res-item"><div class="res-label">Inches</div><div class="res-value">${current.in}"</div></div>
+                    <div class="res-item hero">
+                        <div class="res-label">Selected (${current.cat})</div>
+                        <div class="res-value">${heroValue}<small style="font-size:0.4em; margin-left:5px;">${currentUnit.toUpperCase()}</small></div>
+                    </div>
+                    <div class="res-item"><div class="res-label">US</div><div class="res-value">${current.us}</div></div>
+                    <div class="res-item"><div class="res-label">EU</div><div class="res-value">${current.eu}</div></div>
+                    <div class="res-item"><div class="res-label">Metric</div><div class="res-value">${current.cm}cm</div></div>
+                    <div class="res-item"><div class="res-label">UK</div><div class="res-value">${current.uk}</div></div>
                 </div>
                 ${nextBox}
             </div>
