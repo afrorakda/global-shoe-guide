@@ -38,7 +38,6 @@
             flex-direction: column;
         }
 
-        /* Header with Hub Button */
         header {
             display: flex;
             justify-content: space-between;
@@ -55,7 +54,7 @@
             color: var(--main);
             background: var(--accent);
             padding: 8px 14px;
-            border-radius: 12px; /* 憲法に基づき調整 */
+            border-radius: 12px;
         }
 
         .subtitle { font-size: 0.85rem; color: #999; font-weight: 700; margin-bottom: 25px; text-align: left; }
@@ -109,16 +108,17 @@
             padding-bottom: 8px;
         }
         .res-label { font-size: 0.7rem; font-weight: 800; color: #bbb; text-transform: uppercase; }
-        .res-value { font-size: 1.4rem; font-weight: 900; -webkit-text-fill-color: var(--main); }
+        .res-value { font-size: 1.6rem; font-weight: 900; -webkit-text-fill-color: var(--main); }
         
-        .next-size {
-            margin-top: 15px;
-            padding-top: 10px;
-            border-top: 2px dashed var(--accent);
-            font-size: 0.85rem;
-            font-weight: 800;
-            color: #999;
+        .next-size-box {
+            margin-top: 20px;
+            padding: 15px;
+            background: #fdfdfd;
+            border: 2px dashed var(--accent);
+            border-radius: 12px;
         }
+        .next-label { font-size: 0.7rem; font-weight: 900; color: #999; margin-bottom: 8px; text-transform: uppercase; }
+        .next-values { font-size: 0.9rem; font-weight: 800; color: var(--main); display: flex; gap: 15px; }
 
         /* Selection List */
         .size-list {
@@ -148,12 +148,14 @@
         .list-label {
             text-align: left;
             font-size: 0.75rem;
-            font-weight: 800;
+            font-weight: 900;
             margin-bottom: 10px;
-            color: #bbb;
+            margin-top: 20px;
+            color: var(--main);
+            padding-left: 2px;
         }
+        .list-label:first-child { margin-top: 0; }
 
-        /* Warning & Buttons */
         .warning-text {
             color: #bbb;
             font-size: 0.75rem;
@@ -164,7 +166,6 @@
         }
 
         .footer-btns { margin-top: auto; padding: 20px 0; text-align: center; }
-        
         .kofi-btn {
             display: inline-flex; align-items: center; justify-content: center;
             background: var(--main); color: #fff; width: 100%; max-width: 320px;
@@ -172,13 +173,11 @@
             text-decoration: none; font-weight: 900; font-size: 0.9rem; margin-bottom: 12px;
             -webkit-text-fill-color: #fff;
         }
-        
         .home-btn {
             display: block; width: 100%; max-width: 320px; margin: 0 auto; 
             background: var(--accent); color: var(--main); border: none; 
             padding: 12px; border-radius: var(--radius); font-weight: 800; font-size: 0.85rem; cursor: pointer;
         }
-        
         .back-btn {
             background: var(--main) !important;
             color: #fff !important;
@@ -224,8 +223,7 @@
             <div class="unit-tab" onclick="switchUnit('eu', this)">EU</div>
             <div class="unit-tab" onclick="switchUnit('cm', this)">CM</div>
         </div>
-        <div class="list-label" id="listTitle">Select Current Size (US)</div>
-        <div class="size-list" id="sizeGrid"></div>
+        <div id="gridContainer"></div>
     </div>
 
     <div class="footer-btns">
@@ -254,43 +252,57 @@
 
 <script>
     const SIZE_DATA = [
-        { cm: "12", us: "5",  uk: "4.5", eu: "20", in: "4.7" },
-        { cm: "13", us: "6",  uk: "5.5", eu: "22", in: "5.1" },
-        { cm: "14", us: "8",  uk: "7",   eu: "24", in: "5.5" },
-        { cm: "15", us: "9",  uk: "8.5", eu: "26", in: "5.9" },
-        { cm: "16", us: "10", uk: "9.5", eu: "27", in: "6.3" },
-        { cm: "17", us: "11", uk: "10.5",eu: "28", in: "6.7" },
-        { cm: "18", us: "12", uk: "11.5",eu: "30", in: "7.1" },
-        { cm: "19", us: "13", uk: "12.5",eu: "31", in: "7.5" },
-        { cm: "20", us: "1",  uk: "13.5",eu: "32", in: "7.9" },
-        { cm: "21", us: "2",  uk: "1",   eu: "33", in: "8.3" },
-        { cm: "22", us: "3",  uk: "2",   eu: "35", in: "8.7" },
-        { cm: "23", us: "4.5",uk: "3.5", eu: "36", in: "9.1" },
-        { cm: "24", us: "6",  uk: "5",   eu: "38", in: "9.5" }
+        { cm: "12", us: "5",  uk: "4.5", eu: "20", in: "4.7", cat: "Toddler" },
+        { cm: "13", us: "6",  uk: "5.5", eu: "22", in: "5.1", cat: "Toddler" },
+        { cm: "14", us: "8",  uk: "7",   eu: "24", in: "5.5", cat: "Toddler" },
+        { cm: "15", us: "9",  uk: "8.5", eu: "26", in: "5.9", cat: "Toddler" },
+        { cm: "16", us: "10", uk: "9.5", eu: "27", in: "6.3", cat: "Toddler" },
+        { cm: "17", us: "11", uk: "10.5",eu: "28", in: "6.7", cat: "Little Kid" },
+        { cm: "18", us: "12", uk: "11.5",eu: "30", in: "7.1", cat: "Little Kid" },
+        { cm: "19", us: "13", uk: "12.5",eu: "31", in: "7.5", cat: "Little Kid" },
+        { cm: "20", us: "1",  uk: "13.5",eu: "32", in: "7.9", cat: "Youth" },
+        { cm: "21", us: "2",  uk: "1",   eu: "33", in: "8.3", cat: "Youth" },
+        { cm: "22", us: "3",  uk: "2",   eu: "35", in: "8.7", cat: "Youth" },
+        { cm: "23", us: "4.5",uk: "3.5", eu: "36", in: "9.1", cat: "Youth" },
+        { cm: "24", us: "6",  uk: "5",   eu: "38", in: "9.5", cat: "Youth" }
     ];
 
     let currentUnit = 'us';
-    const sizeGrid = document.getElementById('sizeGrid');
+    const gridContainer = document.getElementById('gridContainer');
     const resultDisplay = document.getElementById('resultDisplay');
     const selectionArea = document.getElementById('selectionArea');
-    const listTitle = document.getElementById('listTitle');
 
     function switchUnit(unit, el) {
         currentUnit = unit;
         document.querySelectorAll('.unit-tab').forEach(t => t.classList.remove('active'));
         el.classList.add('active');
-        listTitle.innerText = `Select Current Size (${unit.toUpperCase()})`;
         renderGrid();
     }
 
     function renderGrid() {
-        sizeGrid.innerHTML = '';
+        gridContainer.innerHTML = '';
+        let lastCat = '';
+        
         SIZE_DATA.forEach((item, index) => {
+            if (item.cat !== lastCat) {
+                const label = document.createElement('div');
+                label.className = 'list-label';
+                label.innerText = `${item.cat} Range`;
+                gridContainer.appendChild(label);
+                
+                const grid = document.createElement('div');
+                grid.className = 'size-list';
+                grid.id = `grid-${item.cat.replace(' ','')}`;
+                gridContainer.appendChild(grid);
+                lastCat = item.cat;
+            }
+            
+            const grid = document.getElementById(`grid-${item.cat.replace(' ','')}`);
             const btn = document.createElement('div');
             btn.className = 'size-btn';
             btn.innerText = item[currentUnit] + (currentUnit === 'cm' ? ' cm' : '');
             btn.onclick = () => showResult(index);
-            sizeGrid.appendChild(btn);
+            grid.appendChild(btn);
         });
     }
 
@@ -302,11 +314,19 @@
         selectionArea.style.display = 'none';
         resultDisplay.style.display = 'block';
         
-        let nextText = next ? `Next Size Goal: US ${next.us} (${next.cm}cm)` : "Youth/Adult size reached.";
+        let nextBox = next ? `
+            <div class="next-size-box">
+                <div class="next-label">Next Size Goal</div>
+                <div class="next-values">
+                    <span>US ${next.us}</span>
+                    <span>${next.eu} EU</span>
+                    <span>${next.cm}cm</span>
+                </div>
+            </div>` : `<div class="next-size-box" style="border:none; color:#bbb;">Youth/Adult size reached.</div>`;
 
         resultDisplay.innerHTML = `
             <div class="result-card">
-                <div style="font-size:0.75rem; font-weight:900; color:var(--main); margin-bottom:15px; letter-spacing:1px; text-transform:uppercase;">Synced Results</div>
+                <div style="font-size:0.75rem; font-weight:900; color:var(--main); margin-bottom:15px; letter-spacing:1px; text-transform:uppercase;">Synced Results (${current.cat})</div>
                 <div class="result-grid">
                     <div class="res-item"><div class="res-label">US Size</div><div class="res-value">${current.us}</div></div>
                     <div class="res-item"><div class="res-label">UK Size</div><div class="res-value">${current.uk}</div></div>
@@ -314,7 +334,7 @@
                     <div class="res-item"><div class="res-label">Metric (cm)</div><div class="res-value">${current.cm}</div></div>
                     <div class="res-item"><div class="res-label">Inches</div><div class="res-value">${current.in}"</div></div>
                 </div>
-                <div class="next-size">${nextText}</div>
+                ${nextBox}
             </div>
             <button class="home-btn back-btn" onclick="resetUI()">Back to List</button>
         `;
@@ -335,7 +355,7 @@
                 const data = await res.json();
                 if (data.footerHtml) document.getElementById('dynamicFooter').innerHTML = data.footerHtml;
             }
-        } catch (e) { /* Fallback to hardcoded HTML */ }
+        } catch (e) {}
     }
 
     window.onload = () => {
